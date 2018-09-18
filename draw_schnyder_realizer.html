@@ -1,0 +1,120 @@
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Schnyder Realizer Visualization</title>
+	<head>
+	<body>
+		<h1 style="text-align:center; padding-top:2%">What is a Schnyder Realizer?</h1>
+		<p style="padding-left:25%; padding-right:25%; padding-top:2%; font-size:18; text-align:center;">
+			Let G be a maximal plane graph. A <i>Schnyder realizer</i> S of G
+			is a partition of the internal edges of G into three sets T1, T2, T3
+			of directed edges, so that for each interior vertex v, the following
+			conditions hold :<br /><br />
+			(a) v has out-degree exactly one in each of T1, T2 and T3,<br />
+			(b) the clockwise order of edges incident to v is :<br />
+				outgoing T1, incoming T2, outgoing T3,<br />
+				incoming T1, outgoing T2, incoming T3<br />
+				(each entering block may be empty)
+		</p>
+		<br />
+		<div style="margin-left:auto;margin-right:auto">
+			<img src="graph_schnyder_realizer_example.png" style="display:block;margin-left:auto;margin-right:auto" />
+			<p style="text-align:center"> A triangular graph and its schnyder realizer</p>
+		</div>
+
+
+
+		<div style="margin:auto;width:50%;padding-top:5%;padding-left:25%;display:inline-block">
+			<h2 style="text-align:center; padding-top:2%;padding-bottom:2%;">
+				A minimal example
+			</h2>
+			<div style="visibility:hidden" id="div-minimale">
+				<div style="float:left;padding-top:2%;">
+					<p id="p-minimale"></p>
+				</div>
+				<div style="float:left">
+					<p style="text-align:center;">Schnyder realizer</p>
+					<img src="minimale.png" style="display:block;margin-left:auto;margin-right:auto;padding-left:5%;max-height=400px;max-width:400px;"/>
+				</div>
+			</div>
+			<div style="display:block;float:left;padding-left:2%;">
+				<p style="text-align:center;">Canonical Ordering</p>
+				<textarea cols="20" rows="12" id="txta-minimale" disabled>
+[2,3,1],
+[0,3,2],
+[1,3,0],
+[0,2,1]
+				</textarea>
+				<br />
+				<br />
+				<button type="button"
+				onClick="document.getElementById('div-minimale').style.visibility='visible';
+					main('minimale')">draw</button>
+			</div>
+		</div>
+
+
+		<div style="margin:auto;width:70%;padding-top:5%;padding-left:20%;display:inline-block">
+			<h2 style="text-align:center; padding-top:2%;padding-bottom:2%;">A more complex example</h2>
+			<div style="visibility:hidden" id="div-piu-complesso">
+				<div style="float:left;padding-top:2%;">
+					<p id="p-piu-complesso"></p>
+				</div>
+				<div style="float:left">
+					<p style="text-align:center;">Schnyder realizer</p>
+					<img src="piu-complesso.jpg" style="display:block;margin-left:auto;margin-right:auto;padding-left:5%;max-height=400px;max-width:400px;"/>
+				</div>
+			</div>
+			<div style="display:block;float:left;padding-left:2%;">
+				<p style="text-align:center;">Canonical Ordering</p>
+				<textarea cols="20" rows="12" id="txta-piu-complesso" disabled>
+[2,3,8,9,1],
+[0,9,10,6,2],
+[1,6,5,4,3,0],
+[0,2,4,8],
+[3,2,5,7,8],
+[4,2,6,7],
+[5,2,1,10,7],
+[4,5,6,10,9,8],
+[3,4,7,9,0],
+[0,8,7,10,1],
+[9,7,6,1]
+				</textarea>
+				<br />
+				<br />
+				<button type="button"
+				onClick="document.getElementById('div-piu-complesso').style.visibility='visible';
+					main('piu-complesso')">draw</button>
+			</div>
+		</div>
+
+
+
+		<div style="margin:auto;width:70%;padding-bottom:25%;">
+			<h1 style="text-align:center;">Insert a canonical ordering of a graph</h1>
+			<div style="float:left;margin:auto;padding-top:2%;">
+				<p style="text-align:center" id="p-user-input"></p>
+			</div>
+			<div style="float:left;padding-right:2%;padding-left:2%;">
+				<textarea cols="20" rows="10" id="txta-user-input"></textarea>
+				<br />
+				<br />
+				<button type="button" onClick="main('user-input')">draw</button>
+			</div>
+			<div style="float:left">
+				<p>Example : <br /><br />
+					[2,3,1],<br />
+					[0,3,2],<br />
+					[1,3,0],<br />
+					[0,2,1]<br /><br />
+
+					which represents this graph :
+				</p>
+			</div>
+			<div style="float:left">
+				<img src="minimal_triangular_graph.png" style="display:block;margin-left:auto;margin-right:auto;padding-left:2%;"/>
+			</div>
+		</div>
+		<script src="draw_schnyder.js"></script>
+	</body>
+</html>
