@@ -34,7 +34,7 @@ function intersection(a,b)
 
 
 
-function are_arrows_equal(a,b)
+function are_edges_equal(a,b)
 {
 	if(a.from !== b.from)
 		return false;
@@ -160,7 +160,7 @@ function draw(embedding)
 	console.log("///////////// DECOMPRESSIONE ///////////////");
 	console.log();
 
-	var arrows = [];
+	var edges = [];
 
 	while(stack_nodi_compressi.length > 0)
 	{
@@ -169,12 +169,12 @@ function draw(embedding)
 		console.log("popped_node : " + popped_node);
 		console.log("vicini : " + vicini);
 		// c'è sempre un arco che va dal nodo ad r3
-		arrows.push({from : popped_node, to : r3, tree : r3});
+		edges.push({from : popped_node, to : r3, tree : r3});
 		var pos_r3 = vicini.indexOf(r3);
 		var pos_vers_r1 = pos_r3 == 0 ? vicini.length-1 : pos_r3-1;
 		var pos_verso_r2 = pos_r3 == vicini.length-1 ? 0 : pos_r3+1;
-		arrows.push({from : popped_node, to : vicini[pos_vers_r1], tree : r1});
-		arrows.push({from: popped_node, to : vicini[pos_verso_r2], tree : r2});
+		edges.push({from : popped_node, to : vicini[pos_vers_r1], tree : r1});
+		edges.push({from: popped_node, to : vicini[pos_verso_r2], tree : r2});
 
 		var value_verso_r1 = vicini[pos_vers_r1];
 		var value_verso_r2 = vicini[pos_verso_r2];
@@ -190,41 +190,41 @@ function draw(embedding)
 		for(var y=0; y<vicini.length; y++)
 		{
 			console.log("Aggiungo un nodo, " + vicini[y] + ", entrante in " + popped_node + ", di colore rosso");
-			arrows.push({from : vicini[y], to : popped_node, tree : r3});
+			edges.push({from : vicini[y], to : popped_node, tree : r3});
 
 			var pos_da_rimuovere =
-				arrows.findIndex(
+				edges.findIndex(
 					function(q)
 					{
 						console.log("cerco_da_rimuovere : " + q);
-						var fuq = are_arrows_equal(
+						var fuq = are_edges_equal(
 						{from : vicini[y], to : r3, tree : r3}, q);
 						console.log(fuq);
 						return fuq;
 					});
 
-			console.log(arrows[pos_da_rimuovere]);
+			console.log(edges[pos_da_rimuovere]);
 			console.log("pos da rimuovere : " + pos_da_rimuovere);
-			arrows.splice(pos_da_rimuovere, 1);
+			edges.splice(pos_da_rimuovere, 1);
 		}
 	}
 
 	// aggiungo gli archi esterni
-	arrows.push({from : 0, to : 1, tree : -1});
-	arrows.push({from : 1, to : 2, tree : -1});
-	arrows.push({from : 2, to : 0, tree : -1});
+	edges.push({from : 0, to : 1, tree : -1});
+	edges.push({from : 1, to : 2, tree : -1});
+	edges.push({from : 2, to : 0, tree : -1});
 
-	console.log("arrows :");
+	console.log("edges :");
 
-	for(var z=0; z<arrows.length; z++)
+	for(var z=0; z<edges.length; z++)
 	{
-		console.log(arrows[z]);
+		console.log(edges[z]);
 	}
 
-	console.log("numero di archi : " + arrows.length);
+	console.log("numero di archi : " + edges.length);
 	console.log();
 
-	return arrows;
+	return edges;
 }
 
 
@@ -236,19 +236,19 @@ function main(id_suffix)
 
 	var user_input = document.getElementById(textarea_id).value;
 	var embedding = parse_embedding(user_input);
-	var arrows = draw(embedding);
+	var edges = draw(embedding);
 
-	var arrows_description = "";
+	var edges_description = "";
 
-	for(var i=0; i<arrows.length; i++)
+	for(var i=0; i<edges.length; i++)
 	{
-		var arrow = arrows[i];
-		arrows_description += arrow.from + " ---> " + arrow.to +
-			(arrow.tree === 0 ? ", azzurro" :
-			arrow.tree === 1 ? ", giallo" :
-			arrow.tree === 2 ? ", rosso" : ", esterno")
+		var edge = edges[i];
+		edges_description += edge.from + " ---> " + edge.to +
+			(edge.tree === 0 ? ", azzurro" :
+			edge.tree === 1 ? ", giallo" :
+			edge.tree === 2 ? ", rosso" : ", esterno")
 			+ "<br />";
 	}
 
-	document.getElementById(paragraph_id).innerHTML = arrows_description;
+	document.getElementById(paragraph_id).innerHTML = edges_description;
 }
