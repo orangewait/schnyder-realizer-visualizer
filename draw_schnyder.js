@@ -4,13 +4,11 @@ const r3 = 2;
 
 
 
-function parse_embedding(textarea_id)
+function parse_embedding(input_string)
 {
-	var input_string =
-		document.getElementById(textarea_id).value;
 	console.log("input_string : " + input_string);
 	input_string = "{\"embedding\" : [" + input_string + "]}";
-	console.log("input_string : " + input_string);
+	console.log("modified input_string : " + input_string);
 
 	return JSON.parse(input_string).embedding;
 }
@@ -66,9 +64,8 @@ function are_arrows_equal(a,b)
 
 
 
-function draw(textarea_id)
+function draw(embedding)
 {
-	var embedding = parse_embedding(textarea_id);
 	var embedding_clone = JSON.parse(JSON.stringify(embedding));
 
 	// print embedding
@@ -245,12 +242,16 @@ function draw(textarea_id)
 }
 
 
+
 function main(id_suffix)
 {
 	var textarea_id = "txta-" + id_suffix;
 	var paragraph_id = "p-" + id_suffix;
 
-	var arrows = draw(textarea_id);
+	var user_input = document.getElementById(textarea_id).value;
+	var embedding = parse_embedding(user_input);
+	var arrows = draw(embedding);
+
 	var arrows_description = "";
 
 	for(var i=0; i<arrows.length; i++)
