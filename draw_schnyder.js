@@ -34,20 +34,6 @@ function intersection(a,b)
 
 
 
-Array.prototype.indexOfNode =
-	function(x)
-	{
-		for(i=0; i<this.length; i++)
-		{
-			if(this[i] === x)
-				return i;
-		}
-
-		return null;
-	};
-
-
-
 function are_arrows_equal(a,b)
 {
 	if(a.from !== b.from)
@@ -134,7 +120,7 @@ function draw(embedding)
 			console.log("lista di adiacenza del nodo " + node_adjacent_selected_node + " : [" + lista_di_adiacenza + "]")
 
 			// indice del selected_node nella lista di adiacenza del node_adjacent_selected_node
-			var pos = lista_di_adiacenza.indexOfNode(selected_node);
+			var pos = lista_di_adiacenza.indexOf(selected_node);
 			console.log("pos : " + pos);
 
 			// se non è già connesso ad r3 e non è r3
@@ -149,7 +135,7 @@ function draw(embedding)
 				embedding_clone[r3].push(node_adjacent_selected_node);
 				//console.log("ECR3 : ")
 				//console.log(ECR3);
-				//var pos_to_replace = ECR3.indexOfNode(selected_node);
+				//var pos_to_replace = ECR3.indexOf(selected_node);
 				//console.log("pos to replace : " + pos_to_replace);
 				//ECR3[pos_to_replace] = node_adjacent_selected_node;
 				//console.log("ECR3[" + pos_to_replace +"] = " + node_adjacent_selected_node);
@@ -184,7 +170,7 @@ function draw(embedding)
 		console.log("vicini : " + vicini);
 		// c'è sempre un arco che va dal nodo ad r3
 		arrows.push({from : popped_node, to : r3, tree : r3});
-		var pos_r3 = vicini.indexOfNode(r3);
+		var pos_r3 = vicini.indexOf(r3);
 		var pos_vers_r1 = pos_r3 == 0 ? vicini.length-1 : pos_r3-1;
 		var pos_verso_r2 = pos_r3 == vicini.length-1 ? 0 : pos_r3+1;
 		arrows.push({from : popped_node, to : vicini[pos_vers_r1], tree : r1});
@@ -195,8 +181,8 @@ function draw(embedding)
 
 		// rimuovo da vicini i 3 archi uscenti ormai "colorati"
 		vicini.splice(pos_r3,1);
-		vicini.splice(vicini.indexOfNode(value_verso_r1), 1);
-		vicini.splice(vicini.indexOfNode(value_verso_r2), 1);
+		vicini.splice(vicini.indexOf(value_verso_r1), 1);
+		vicini.splice(vicini.indexOf(value_verso_r2), 1);
 
 		console.log("vicini rimanenti : [" + vicini +"]");
 
