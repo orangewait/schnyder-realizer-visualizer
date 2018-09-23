@@ -50,126 +50,164 @@ function are_edges_equal(a,b)
 
 
 
+function get_deletable_node(embedding, deleted_nodes)
+{
+	var deletable_node = null;
+	var ignorable_nodes = [r1,r2,r3].concat(deleted_nodes);
+
+	var r3_neighbors = embedding[r3];
+	console.log("R3 neighbors : " + r3_neighbors);
+
+	// for all internal nodes having an edge in common with r3 ...
+	for(var i=0; i<r3_neighbors.length; i++)
+	{
+		var node = r3_neighbors[i];
+
+		// ... excluding r1,r2,r3 and all deleted nodes
+		if(ignorable_nodes.includes(node))
+		{
+			console.log("Ignoring " + node);
+			continue;
+		}
+
+		var node_neighbors = embedding[node];
+		var common_neighbors = intersection(r3_neighbors, node_neighbors);
+
+		// se r3 e node hanno esattamente 2 vicini in comune, allora
+		// node è un compressable node
+		if (common_neighbors.length === 2)
+		{
+			console.log(node + " and " + r3 + " have exactly 2 common neighbors");
+			console.log(common_neighbors);
+
+			deletable_node = node;
+			break;
+		}
+		else // QUESTO ELSE PENSO SI POSSA RIMUOVERE
+		{
+			console.log
+			(
+				node + " and " + r3 + " have " + common_neighbors.length +
+				" common neighbors => Ignored"
+			);
+		}
+	}
+
+	return deletable_node;
+}
+
+
+
+// Deletes the node 'node'.
+// Neighbors of 'node', if they are not yet,
+// get connectet to r3
+function contract_edge_between_r3_and_node(node, embedding)
+{
+	var node_neighbors = embedding[node];
+
+	console.log("node : " + node);
+	console.log("number of node neighbors : #" + node_neighbors.length + "\n");
+
+	// delete all the edges incident on node
+	// from the adjacency list of connected nodes
+	for(var i=0; i<node_neighbors.length; i++)
+	{
+		var node_neighbor = node_neighbors[i];
+		var adjacency_list = embedding[node_neighbor];
+		var node_index = adjacency_list.indexOf(node);
+
+		console.log("node neighbor : " + node_neighbor);
+		console.log("adjacency list : " + node_neighbor + " : [" + adjacency_list + "]")
+		console.log("node index in adjacency list : " + node_index);
+
+		if(node_neighbor === r3 || adjacency_list.includes(r3))
+		{
+			console.log
+			(
+				"Since " + node_neighbor + " is connected to " + r3 + " or it is " + r3 +
+				", remove the edge connecting it to " + node
+			);
+			//remove node from adjacency_list
+			adjacency_list.splice(node_index,1);
+		}
+		else // se non è già connesso ad r3 e non è r3
+		{
+			console.log
+			(
+				"Since " + node_neighbor + " is not connected to " + r3 +
+				", replace the edge connecting it to " + node +
+				" with an edge connecting it to " + r3
+			);
+			//replace node with r3
+			adjacency_list[node_index] = r3;
+			// add this node to r3 adjacency list
+			embedding[r3].push(node_neighbor);
+		}
+
+		console.log(adjacency_list);
+		console.log();
+	}
+}
+
+
+
+// conctract edges and returns the stack of deleted nodes
+function contract_edges(embedding)
+{
+	var deleted_nodes_stack = [];
+
+	console.log("///////////// COMPRESSION ///////////////");
+
+	// for all internal nodes
+	for(var i=0; i<embedding.length-3; i++)
+	{
+		console.log("deleted_nodes_stack : [" + deleted_nodes_stack + "]");
+
+		var node = get_deletable_node(embedding, deleted_nodes_stack);
+		contract_edge_between_r3_and_node(node, embedding);
+		deleted_nodes_stack.push(node);
+
+		console.log("/////////////// NODE " + node + " DELETED /////////////");
+		console.log("R3 NEIGHBORS : ");
+		console.log(embedding[r3]);
+		console.log();
+	}
+
+	return deleted_nodes_stack;
+}
+
+
+
 function draw(embedding)
 {
+	// PROBABILMENTE SI PUÒ ELIMINARE
 	var embedding_clone = JSON.parse(JSON.stringify(embedding));
 
-	// print embedding
 	for(var i=0; i<embedding.length; i++)
 	{
 		console.log("node " + i + " : " + embedding[i]);
 	}
 
-	var selected_node = null;
-	var stack_nodi_compressi = [];
+	// nomi poco intuitivi
+	var deleted_nodes_stack = contract_edges(embedding_clone);
 
-	// for all'internal nodes
-	for(var i=0; i<embedding_clone.length-3; i++)
-	{
-		var r3_adjacent_nodes = embedding_clone[r3];
-		console.log("Nodi connessi ad r3 : " + r3_adjacent_nodes);
-
-		// for all'internal nodes having an edge in common with r3
-		for(var j=0; j<r3_adjacent_nodes.length; j++)
-		{
-			var node = r3_adjacent_nodes[j];
-
-			if(node === r1 || node === r2 || node === r3 || stack_nodi_compressi.includes(node))
-			{
-				console.log("Ignoro " + node);
-				continue;
-			}
-
-			// QUESTA RIGA PROBABILMENTE SI PUÒ SPOSTARE FUORI DA QUESTO FOR
-			var nodes_adjacent_selected_node = embedding_clone[node];
-			var common_neighbors =
-				intersection(r3_adjacent_nodes, nodes_adjacent_selected_node);
-
-			// se r2 e node hanno esattamente 2 vicini in comune, allora
-			// node diventa il selected node per la compressione
-			if (common_neighbors.length === 2)
-			{
-				console.log(node + " e " + r3 +
-					" hanno esattamente 2 vicini in comune");
-				console.log(common_neighbors);
-
-				selected_node = node;
-				stack_nodi_compressi.push(node);
-				break;
-			}
-			else
-			{
-				console.log(node + " e " + r3 + " hanno addirittura " + common_neighbors.length + " vicini \n Dropped");
-			}
-		}
-
-		// trovato il selected_node, passo alla compressione
-		console.log("selected_node : " + selected_node);
-		console.log("stack_nodi_compressi : [" + stack_nodi_compressi + "]");
-		console.log("numero nodi adiacenti al selezionato : #" + nodes_adjacent_selected_node.length);
-		console.log();
-
-		// cancello tutti gli archi incidenti sul selected_node dalle varie
-		// liste di adiacenza
-		for(var k=0; k<nodes_adjacent_selected_node.length; k++)
-		{
-			var node_adjacent_selected_node = nodes_adjacent_selected_node[k];
-			console.log("nodo adiacente a quello selezionato : " + node_adjacent_selected_node);
-
-			var lista_di_adiacenza = embedding_clone[node_adjacent_selected_node];
-			console.log("lista di adiacenza del nodo " + node_adjacent_selected_node + " : [" + lista_di_adiacenza + "]")
-
-			// indice del selected_node nella lista di adiacenza del node_adjacent_selected_node
-			var pos = lista_di_adiacenza.indexOf(selected_node);
-			console.log("pos : " + pos);
-
-			// se non è già connesso ad r3 e non è r3
-			if(node_adjacent_selected_node !== r3 && !lista_di_adiacenza.includes(r3))
-			{
-				console.log("Non essendo connesso a " + r3 + ", sostituisco l'arco verso " + selected_node + " con un arco verso " + r3);
-				//replace selected_node with r3
-				lista_di_adiacenza[pos] = r3;
-
-				// PROBABILMENTE SI PUÒ USARE r3_adjacent_nodes
-				// add this node to r3 adjacency list
-				embedding_clone[r3].push(node_adjacent_selected_node);
-				//console.log("ECR3 : ")
-				//console.log(ECR3);
-				//var pos_to_replace = ECR3.indexOf(selected_node);
-				//console.log("pos to replace : " + pos_to_replace);
-				//ECR3[pos_to_replace] = node_adjacent_selected_node;
-				//console.log("ECR3[" + pos_to_replace +"] = " + node_adjacent_selected_node);
-			}
-			else
-			{
-				console.log("Essendo già connesso a " + r3 + " oppure proprio " + r3 +", mi limito a rimuovere l'arco verso " + selected_node);
-				//remove the selected node from this one adjacency list
-				lista_di_adiacenza.splice(pos,1);
-			}
-
-			console.log(lista_di_adiacenza);
-			console.log();
-		}
-
-		console.log("/////////////// NODO " + selected_node + " ELIMINATO /////////////");
-		console.log("CONNESSI AD R3");
-		console.log(embedding_clone[r3]);
-		console.log();
-	}
-
-	console.log("///////////// DECOMPRESSIONE ///////////////");
+	console.log("///////////// DECOMPRESSION ///////////////");
 	console.log();
 
 	var edges = [];
 
-	while(stack_nodi_compressi.length > 0)
+	while(deleted_nodes_stack.length > 0)
 	{
-		var popped_node = stack_nodi_compressi.pop();
+		var popped_node = deleted_nodes_stack.pop();
+		// ogni nodo sa a chi era connesso al momento della propria compressione
+		// solo i suoi vicini si dimenticano di lui
 		var vicini = embedding_clone[popped_node];
 		console.log("popped_node : " + popped_node);
 		console.log("vicini : " + vicini);
+
 		// c'è sempre un arco che va dal nodo ad r3
 		edges.push({from : popped_node, to : r3, tree : r3});
+
 		var pos_r3 = vicini.indexOf(r3);
 		var pos_vers_r1 = pos_r3 == 0 ? vicini.length-1 : pos_r3-1;
 		var pos_verso_r2 = pos_r3 == vicini.length-1 ? 0 : pos_r3+1;
@@ -189,7 +227,12 @@ function draw(embedding)
 		// tutti i restanti archi incidenti sono entranti e diretti verso r3
 		for(var y=0; y<vicini.length; y++)
 		{
-			console.log("Aggiungo un nodo, " + vicini[y] + ", entrante in " + popped_node + ", di colore rosso");
+			console.log
+			(
+				"Aggiungo un nodo, " + vicini[y] +
+				", entrante in " + popped_node +
+				", di colore rosso"
+			);
 			edges.push({from : vicini[y], to : popped_node, tree : r3});
 
 			var pos_da_rimuovere =
