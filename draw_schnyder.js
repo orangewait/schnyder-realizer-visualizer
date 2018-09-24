@@ -289,7 +289,7 @@ function remove_invalid_r3_incident_edges(node_neighbors, edges)
 
 
 
-function draw(embedding)
+function schnyder_realizer(embedding)
 {
 	var embedding_clone = JSON.parse(JSON.stringify(embedding));
 
