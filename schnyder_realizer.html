@@ -132,12 +132,7 @@
 
 				console.log();
 
-				var edges = schnyder_realizer(embedding);
-
-				// Add external edges
-				edges.push({from : 0, to : 1, tree : -1});
-				edges.push({from : 1, to : 2, tree : -1});
-				edges.push({from : 2, to : 0, tree : -1});
+				var edges = graph_schnyder_realized(embedding);
 
 				console.log("number of edges : " + edges.length + "\n");
 
@@ -152,9 +147,9 @@
 					edges_description +=
 						edge.from + " ---> " + edge.to +
 						(
-							edge.tree === 0 ? ", azzurro" :
-							edge.tree === 1 ? ", giallo" :
-							edge.tree === 2 ? ", rosso" : ", esterno"
+							edge.tree === r1 ? ", azzurro" :
+							edge.tree === r2 ? ", giallo" :
+							edge.tree === r3 ? ", rosso" : ", esterno"
 						)
 						+ "<br />";
 				}

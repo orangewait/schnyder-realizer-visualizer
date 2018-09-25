@@ -310,9 +310,23 @@ function schnyder_realizer(embedding)
 		console.log("node_neighbors : [" + node_neighbors+ "]");
 
 		set_node_outgoing_edges(node, node_neighbors, edges);
-		set_node_ingoing_edges(node, node_neighbors, edges);
 		remove_invalid_r3_incident_edges(node_neighbors, edges);
+		set_node_ingoing_edges(node, node_neighbors, edges);
 	}
+
+	return edges;
+}
+
+
+
+// Returns the schnyder realizer edges and the external edges
+function graph_schnyder_realized(embedding)
+{
+	var edges = schnyder_realizer(embedding);
+
+	edges.push({from : r1, to : r2, tree : -1});
+	edges.push({from : r2, to : r3, tree : -1});
+	edges.push({from : r3, to : r1, tree : -1});
 
 	return edges;
 }
