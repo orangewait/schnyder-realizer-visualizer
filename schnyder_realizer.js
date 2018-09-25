@@ -1,8 +1,4 @@
-const r1 = 0;
-const r2 = 1;
-const r3 = 2;
-
-
+var r1, r2, r3;
 
 function intersection(a,b)
 {
@@ -45,7 +41,14 @@ function parse_embedding(input_string)
 	input_string = "{\"embedding\" : [" + input_string + "]}";
 	console.log("modified input_string : " + input_string);
 
-	return JSON.parse(input_string).embedding;
+	var embedding = JSON.parse(input_string).embedding;
+
+	// set r1, r2, r3 nodes indexes
+	r1 = 0;
+	r2 = 1;
+	r3 = embedding.length-1;
+
+	return embedding;
 }
 
 
